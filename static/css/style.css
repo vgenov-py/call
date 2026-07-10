@@ -1,0 +1,114 @@
+:root {
+  --bg: #a2d2ff;
+  --panel: #ffafcc;
+  --accent: #2dd48a;
+  --accent-dim: #1f9d67;
+  --text: #f2f2f5;
+  --text-dim: #9a9aa5;
+  --danger: #e5484d;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--panel);
+  border-radius: 20px;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 1.4rem;
+  margin: 0 0 8px;
+}
+
+.subtitle {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+}
+
+.id-badge {
+  display: inline-block;
+  background: #a2d2ff;
+  color: var(--accent);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-family: monospace;
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #a2d2ff;
+  background: #a2d2ff;
+  color: var(--text);
+  font-size: 1rem;
+  margin-bottom: 16px;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: var(--accent-dim); }
+.btn-danger { background: var(--danger); color: white; }
+.btn-secondary { background: #a2d2ff; color: var(--text); }
+
+.status {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  margin: 16px 0;
+}
+
+.hidden { display: none !important; }
+
+.incoming-panel {
+  background: #0f0f15;
+  border: 1px solid var(--accent-dim);
+  border-radius: 14px;
+  padding: 18px;
+  margin-top: 16px;
+}
+
+.incoming-panel .row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.link {
+  color: var(--accent);
+  font-size: 0.85rem;
+  text-decoration: none;
+}

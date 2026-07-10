@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>VoIP — Call</title>
+  <link rel="manifest" href="/static/manifest.json" />
+  <meta name="theme-color" content="#121218" />
+  <link rel="apple-touch-icon" href="/static/icons/icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="VoIP" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div class="card">
+    <h1>Call</h1>
+    <p class="subtitle">Your ID</p>
+    <div class="id-badge" id="my-id-display">...</div>
+
+    <button class="btn-secondary" id="enable-notifications-btn">Enable Notifications</button>
+
+    <input type="text" id="target-id" placeholder="ID to call (e.g. user_ab12cd)" />
+    <button class="btn-primary" id="call-btn">Call</button>
+    <button class="btn-danger" id="hangup-btn">Hang up</button>
+
+    <p class="status" id="status">Idle</p>
+
+    <div class="incoming-panel hidden" id="incoming-call-panel">
+      <div>Incoming call from <strong id="incoming-from"></strong></div>
+      <div class="row">
+        <button class="btn-primary" id="answer-btn">Answer</button>
+        <button class="btn-danger" id="decline-btn">Decline</button>
+      </div>
+    </div>
+
+    <a class="link" href="/">← back</a>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/call.js"></script>
+</body>
+</html>
