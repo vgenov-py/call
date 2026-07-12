@@ -44,6 +44,58 @@ The SQLite file `voip.db` is created automatically on first run, with a
 `users` table and a `call_logs` table (caller/callee/timestamp for every
 accepted call).
 
+## Deploying behind nginx + gunicorn
+
+This app keeps all presence/call state in one process's memory (no Redis),
+so it must run as a **single process**. Use gunicorn with the `eventlet`
+worker class (plain sync workers don't support websockets at all):
+
+```bash
+gunicorn -k eventlet -w 1 -b 127.0.0.1:5000 app:app
+```
+
+Set `SECRET_KEY` to a fixed value in the environment (systemd unit,
+`.env`, etc.) rather than relying on the auto-generated `.secret_key`
+file — especially if you ever run more than one instance or wipe the
+filesystem between deploys:
+
+```bash
+export SECRET_KEY="$(python3 -c 'import secrets; print(secrets.token_hex(32))')"
+```
+
+nginx must be told to proxy websocket upgrades, or Socket.IO falls back
+to polling and behaves worse (and can still break sessions if requests
+aren't sticky). Example `server` block:
+
+```nginx
+server {
+    listen 80;
+    server_name call.infofortis.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 3600s;   # keep long-lived socket connections open
+    }
+}
+```
+
+Then put this behind HTTPS (e.g. `certbot --nginx`) — `getUserMedia`
+(microphone access) is blocked by browsers on any non-`localhost` origin
+that isn't served over HTTPS, so calling won't work on a plain `http://`
+public domain regardless of the backend being fixed.
+
+If you outgrow a single process later (need multiple workers/machines),
+that requires adding a message queue (Redis) for Socket.IO and moving
+`online_users`/`active_calls` into it too — that's a real architecture
+change, not a config tweak.
+
 ## Notes / limitations (intentional, given "minimal")
 
 - **Audio format**: raw 16-bit mono PCM at 16kHz, uncompressed — simplest

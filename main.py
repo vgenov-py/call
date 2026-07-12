@@ -9,8 +9,27 @@ from werkzeug.security import generate_password_hash, check_password_hash
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "voip.db")
 
+def get_secret_key():
+    """A stable key is required: with more than one process (e.g. multiple
+    gunicorn workers), each process importing this module must produce the
+    SAME key, or a session cookie signed by one worker will be rejected by
+    another ('Invalid session' errors). Prefer an env var in production;
+    fall back to a key persisted on disk so it still survives restarts."""
+    env_key = os.environ.get("SECRET_KEY")
+    if env_key:
+        return env_key
+    key_path = os.path.join(BASE_DIR, ".secret_key")
+    if os.path.exists(key_path):
+        with open(key_path, "r") as f:
+            return f.read().strip()
+    key = secrets.token_hex(32)
+    with open(key_path, "w") as f:
+        f.write(key)
+    return key
+
+
 app = Flask(__name__)
-app.config["SECRET_KEY"] = secrets.token_hex(16)
+app.config["SECRET_KEY"] = get_secret_key()
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 # In-memory presence/call state. Fine for a single-process minimal app.
@@ -207,4 +226,4 @@ def handle_audio_chunk(data):
 
 if __name__ == "__main__":
     init_db()
-    socketio.run(app, host="0.0.0.0", port=5001, debug=True)
+    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
