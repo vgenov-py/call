@@ -12,6 +12,7 @@ let nextPlayTime = 0;
 let inCall = false;
 let muted = false;
 let pendingCaller = null;
+let wakeLock = null;
 
 const userListEl = document.getElementById("user-list");
 const statusEl = document.getElementById("status");
@@ -87,6 +88,33 @@ socket.on("call_ended", (data) => {
   setStatus(data.reason || "Call ended", 3000);
 });
 
+async function requestWakeLock() {
+  if (!("wakeLock" in navigator)) return; // unsupported browser — silently skip
+  try {
+    wakeLock = await navigator.wakeLock.request("screen");
+  } catch (err) {
+    // Can fail if the tab isn't visible/focused at the moment of the call,
+    // or the OS refuses it — not fatal, the call still works.
+    wakeLock = null;
+  }
+}
+
+async function releaseWakeLock() {
+  if (wakeLock) {
+    try { await wakeLock.release(); } catch (err) { /* already released */ }
+    wakeLock = null;
+  }
+}
+
+// The wake lock is auto-released by the browser whenever the tab is hidden
+// (app-switch, screen lock). If the call is still going when the tab
+// becomes visible again, re-acquire it so the screen stays on again.
+document.addEventListener("visibilitychange", () => {
+  if (inCall && document.visibilityState === "visible" && !wakeLock) {
+    requestWakeLock();
+  }
+});
+
 async function startCall(peer) {
   inCall = true;
   callPeerEl.textContent = peer;
@@ -96,6 +124,8 @@ async function startCall(peer) {
 
   audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: SAMPLE_RATE });
   nextPlayTime = audioContext.currentTime;
+
+  requestWakeLock();
 
   try {
     mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -171,6 +201,7 @@ function endCall() {
   callControls.classList.add("hidden");
   muted = false;
   muteBtn.textContent = "Mute";
+  releaseWakeLock();
 
   if (processor) {
     processor.onaudioprocess = null;
