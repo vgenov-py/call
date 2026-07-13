@@ -226,4 +226,4 @@ def handle_audio_chunk(data):
 
 if __name__ == "__main__":
     init_db()
-    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
+    socketio.run(app, host="0.0.0.0", port=8022, debug=True)
