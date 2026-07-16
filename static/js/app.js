@@ -115,7 +115,29 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
+async function startNativeAudioSession() {
+  if (window.Capacitor?.isNativePlatform()) {
+    try {
+      await window.Capacitor.Plugins.AudioSession.start();
+    } catch (e) {
+      console.warn('Native audio session start failed', e);
+    }
+  }
+}
+
+async function stopNativeAudioSession() {
+  if (window.Capacitor?.isNativePlatform()) {
+    try {
+      await window.Capacitor.Plugins.AudioSession.stop();
+    } catch (e) {
+      console.warn('Native audio session stop failed', e);
+    }
+  }
+}
+
 async function startCall(peer) {
+  await startNativeAudioSession();
+
   inCall = true;
   callPeerEl.textContent = peer;
   callControls.classList.remove("hidden");
@@ -212,6 +234,8 @@ function endCall() {
   if (micSource) { micSource.disconnect(); micSource = null; }
   if (mediaStream) { mediaStream.getTracks().forEach((t) => t.stop()); mediaStream = null; }
   if (audioContext) { audioContext.close(); audioContext = null; }
+
+  stopNativeAudioSession();
 
   refreshUsers();
 }
