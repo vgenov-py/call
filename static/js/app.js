@@ -114,13 +114,12 @@ document.addEventListener("visibilitychange", () => {
     requestWakeLock();
   }
 });
-
 async function startNativeAudioSession() {
   if (window.Capacitor?.isNativePlatform()) {
     try {
       await window.Capacitor.Plugins.AudioSession.start();
     } catch (e) {
-      console.warn('Native audio session start failed', e);
+      console.warn('Native audio session start failed:', e?.message || e?.code || String(e));
     }
   }
 }
@@ -130,7 +129,7 @@ async function stopNativeAudioSession() {
     try {
       await window.Capacitor.Plugins.AudioSession.stop();
     } catch (e) {
-      console.warn('Native audio session stop failed', e);
+      console.warn('Native audio session stop failed:', e?.message || e?.code || String(e));
     }
   }
 }
