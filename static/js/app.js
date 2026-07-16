@@ -148,7 +148,14 @@ async function startCall(peer) {
   nextPlayTime = audioContext.currentTime;
   audioContext.onstatechange = () => {
   console.log('AudioContext state changed:', audioContext.state);
-  };
+  if (audioContext.state === 'interrupted') {
+    audioContext.resume().then(() => {
+      console.log('AudioContext resumed after interruption');
+    }).catch((e) => {
+      console.warn('AudioContext resume failed:', e.message);
+    });
+  }
+};
 
   requestWakeLock();
 
