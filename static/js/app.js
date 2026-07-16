@@ -146,6 +146,9 @@ async function startCall(peer) {
 
   audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: SAMPLE_RATE });
   nextPlayTime = audioContext.currentTime;
+  audioContext.onstatechange = () => {
+  console.log('AudioContext state changed:', audioContext.state);
+  };
 
   requestWakeLock();
 
