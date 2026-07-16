@@ -118,6 +118,7 @@ async function startNativeAudioSession() {
   if (window.Capacitor?.isNativePlatform()) {
     try {
       await window.Capacitor.Plugins.AudioSession.start();
+      console.log('Native audio session started OK');
     } catch (e) {
       console.warn('Native audio session start failed:', e?.message || e?.code || String(e));
     }
