@@ -1,0 +1,4 @@
+venv
+voip.db
+.secret_key
+__pycache__
