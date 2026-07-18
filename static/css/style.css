@@ -63,8 +63,8 @@ main { max-width: 560px; margin: 32px auto; padding: 0 16px; }
   color: white;
 }
 .btn:hover { background: var(--accent-hover); }
-.btn-accept { background: #2ea043; }
-.btn-accept:hover { background: #279238; }
+.btn-accept { background: #cdb4db; }
+.btn-accept:hover { background: #cdb4ff; }
 .btn-reject { background: var(--danger); }
 .btn-reject:hover { background: var(--danger-hover); }
 
